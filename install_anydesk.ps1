@@ -26,11 +26,9 @@ if (-not (Test-Path $tempInstaller)) {
     exit 1
 }
 
-Write-Output "Instalando AnyDesk..."
+Write-Output "Abrindo instalador do AnyDesk..."
 
-Start-Process $tempInstaller `
-    -ArgumentList '--install "C:\Program Files (x86)\AnyDesk" --start-with-win --silent' `
-    -Wait
+Start-Process $tempInstaller
 
-Write-Output "Instalação concluída."
+Write-Output "Instalador iniciado."
 exit 0
