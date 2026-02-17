@@ -10,22 +10,27 @@ if (Test-Path $anydeskPath) {
 Write-Output "AnyDesk não encontrado. Baixando instalador..."
 
 $installerUrl = "https://download.anydesk.com/AnyDesk.exe"
-$tempInstaller = "$env:TEMP\AnyDesk.exe"
+$tempInstaller = "$env:TEMP\AnyDesk_setup.exe"
 
 try {
-    Invoke-WebRequest -Uri $installerUrl -OutFile $tempInstaller -UseBasicParsing
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    $wc = New-Object System.Net.WebClient
+    $wc.DownloadFile($installerUrl, $tempInstaller)
+} catch {
+    Write-Output "Falha ao baixar AnyDesk: $_"
+    exit 1
 }
-catch {
-    Write-Output "Falha ao baixar AnyDesk."
+
+if (-not (Test-Path $tempInstaller)) {
+    Write-Output "Arquivo não encontrado após download."
     exit 1
 }
 
 Write-Output "Instalando AnyDesk..."
 
 Start-Process $tempInstaller `
-    -ArgumentList "--install C:\Program Files (x86)\AnyDesk --start-with-win --silent" `
+    -ArgumentList '--install "C:\Program Files (x86)\AnyDesk" --start-with-win --silent' `
     -Wait
 
 Write-Output "Instalação concluída."
-
 exit 0
