@@ -1,6 +1,6 @@
 $anydeskPath = "C:\Program Files (x86)\AnyDesk\AnyDesk.exe"
 
-Write-Output "Verificando instalação do AnyDesk..."
+Write-Output "Verificando arquivo AnyDesk..."
 
 if (Test-Path $anydeskPath) {
     Write-Output "AnyDesk já está instalado."
@@ -32,3 +32,4 @@ Start-Process $tempInstaller
 
 Write-Output "Instalador iniciado."
 exit 0
+
