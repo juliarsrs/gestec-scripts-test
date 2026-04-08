@@ -1,0 +1,31 @@
+# test-admin.ps1
+
+Write-Host "Iniciando teste de privilégios..." -ForegroundColor Cyan
+
+# 🔍 Verifica se está rodando como admin
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole] "Administrator")
+
+if (-not $isAdmin) {
+    Write-Host "❌ NÃO está rodando como administrador!" -ForegroundColor Red
+} else {
+    Write-Host "✅ Rodando como administrador!" -ForegroundColor Green
+}
+
+# 📁 Tentativa 1: criar pasta em área protegida
+try {
+    $path = "C:\Windows\Temp\gestec-test"
+    New-Item -ItemType Directory -Path $path -Force | Out-Null
+    Write-Host "✔ Pasta criada em $path"
+} catch {
+    Write-Host "❌ Falha ao criar pasta em C:\Windows (precisa de admin)"
+}
+
+# 🧾 Tentativa 2: escrever no registro (HKLM)
+try {
+    New-ItemProperty -Path "HKLM:\SOFTWARE\GestecTest" -Name "TestValue" -Value "OK" -PropertyType String -Force | Out-Null
+    Write-Host "✔ Registro criado em HKLM"
+} catch {
+    Write-Host "❌ Falha ao escrever no registro (precisa de admin)"
+}
+
+Write-Host "Teste finalizado."
