@@ -1,0 +1,207 @@
+param(
+    [string]$CsvUrl = "https://drive.google.com/uc?export=download&id=1wQhhtKmjAnMkufALcb0Vc245glInmxBR",
+    [string]$CsvPath = "$env:TEMP\details.csv",
+    [switch]$SetAsDefault = $true
+)
+
+# Template HTML da assinatura
+$htmlTemplate = @"
+<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='UTF-8'>
+  <style>
+    body {
+      font-family: Verdana, sans-serif;
+      font-size: 12px;
+      color: #222;
+    }
+    table { border-collapse: collapse; }
+    td { padding: 2px 5px; vertical-align: middle; }
+    a { color: black; text-decoration: none; }
+  </style>
+</head>
+<body>
+<table cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td rowspan="5">
+      <img height="53" src="{{LINK_LOGO}}" style="height:.55in;width:1.408in;" width="135" />
+    </td>
+    <td colspan="5">
+      <b style="font-size:14.0pt;font-family:'Georgia',serif;color:#806000;">{{NOME}}</b>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="5">
+      <b style="font-family:'Georgia',serif;color:#806000;">{{CARGO}}</b>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img height="12" src="{{LINK_WHATSAPP}}" style="height:.125in;width:.125in;" width="12" />
+    </td>
+    <td colspan="4">
+      <a href="https://api.whatsapp.com/send?phone={{LINK_TELEFONE}}">{{TELEFONE}}</a>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <img border="0" height="12" src="{{LINK_SITE}}" style="height:.125in;width:.125in;" width="12" />
+    </td>
+    <td>
+      <a href="https://www.prosperato.com.br/">{{SITE}}</a>
+    </td>
+    <td colspan="1" style="padding:0; margin:0;">
+      <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+        <tr>
+          <td style="padding:0; margin:0;">
+            <img src="{{LINK_FACEBOOK}}" width="7" height="12" style="display:block; border:0;" />
+          </td>
+          <td style="width:3px; padding:0; margin:0; font-size:0; line-height:0;">&nbsp;</td>
+          <td style="padding:0; margin:0;">
+            <img src="{{LINK_INSTAGRAM}}" width="11" height="12" style="display:block; border:0;" />
+          </td>
+          <td style="width:6px; padding:0; margin:0; font-size:0; line-height:0;">&nbsp;</td>
+        </tr>
+      </table>
+    </td>
+    <td>
+      <a href="https://lnk.bio/azeiteprosperato">azeiteprosperato</a>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <img border="0" height="12" src="{{LINK_GPS}}" style="height:.125in;width:.091in;" width="9" />
+    </td>
+    <td colspan="3">
+      <a href="https://g.page/azeiteprosperato?share">
+        Emp&oacute;rio e Lagar - BR 290, Km 327,<br />
+        Vila Progresso - Ca&ccedil;apava do Sul/RS - Brasil
+      </a>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
+"@
+
+# Função para detectar versão do Outlook via registro do usuário (HKU:\<SID>)
+function Get-OutlookVersionKey {
+    param([string]$sid)
+
+    $versions = @("16.0", "15.0", "14.0")
+    foreach ($v in $versions) {
+        $key = "Registry::HKEY_USERS\$sid\Software\Microsoft\Office\$v\Common"
+        if (Test-Path $key) { return $v }
+    }
+    return $null
+}
+
+try {
+    # Obter usuário logado
+    $user = (Get-CimInstance Win32_ComputerSystem).UserName
+    if (-not $user) { throw "Nenhum usuário logado encontrado." }
+    $nomeUsuario = $user.Split('\')[-1]
+    Write-Host "Usuário logado: $nomeUsuario"
+
+    # Obter SID do usuário logado de forma confiável
+    try {
+        $ntAccount = New-Object System.Security.Principal.NTAccount($user)
+        $sid = $ntAccount.Translate([System.Security.Principal.SecurityIdentifier]).Value
+        Write-Host "SID do usuário ${nomeUsuario}: $sid"
+    }
+    catch {
+        throw "Não foi possível obter o SID para o usuário $nomeUsuario"
+    }
+
+    # Baixar CSV
+    Write-Host "Baixando CSV de: $CsvUrl"
+    Invoke-WebRequest -Uri $CsvUrl -OutFile $CsvPath -UseBasicParsing
+
+    if (-not (Test-Path $CsvPath)) { throw "CSV não foi baixado corretamente." }
+
+    # Importar CSV
+    Write-Host "Importando CSV..."
+    $rows = Import-Csv -Path $CsvPath
+    if (-not $rows -or $rows.Count -eq 0) { throw "CSV está vazio ou inválido." }
+
+    # Obter ServiceTag atual
+    $serviceTag = (Get-CimInstance Win32_BIOS).SerialNumber.Trim()
+    Write-Host "ServiceTag do computador: '$serviceTag'"
+
+    # Procurar linha correspondente
+    $userRow = $rows | Where-Object { $_.ServiceTag.Trim() -eq $serviceTag }
+    if (-not $userRow) { throw "ServiceTag '$serviceTag' não encontrado no CSV." }
+
+    Write-Host "Dados encontrados para: $($userRow.nome)"
+
+    # Substituir os campos no HTML
+    $html = $htmlTemplate.Replace("{{NOME}}", $userRow.nome).
+                          Replace("{{CARGO}}", $userRow.cargo).
+                          Replace("{{TELEFONE}}", $userRow.telefone).
+                          Replace("{{SITE}}", $userRow.site).
+                          Replace("{{LINK_WHATSAPP}}", $userRow.link_whatsapp).
+                          Replace("{{LINK_SITE}}", $userRow.link_site).
+                          Replace("{{LINK_TELEFONE}}", $userRow.link_telefone).
+                          Replace("{{LINK_FACEBOOK}}", $userRow.link_facebook).
+                          Replace("{{LINK_INSTAGRAM}}", $userRow.link_instagram).
+                          Replace("{{LINK_LOGO}}", $userRow.link_logo).
+                          Replace("{{LINK_GPS}}", $userRow.link_gps)
+
+    $sigName = $userRow.nome
+
+    # Caminho do diretório de assinaturas do usuário logado
+    $sigRoot = "C:\Users\$nomeUsuario\AppData\Roaming\Microsoft\Signatures"
+    if (-not (Test-Path $sigRoot)) {
+        New-Item -Path $sigRoot -ItemType Directory -Force | Out-Null
+    }
+
+    $htmPath = Join-Path $sigRoot "$sigName.htm"
+    $txtPath = Join-Path $sigRoot "$sigName.txt"
+
+    # Salva assinatura HTML (com BOM)
+    $utf8 = New-Object System.Text.UTF8Encoding($true)
+    [System.IO.File]::WriteAllText($htmPath, $html, $utf8)
+
+    # Criar versão TXT simples
+    $plain = ($html -replace "<[^>]+>", " ") -replace "\s+", " "
+    Set-Content -Path $txtPath -Value $plain -Encoding UTF8
+
+    # Configurar assinatura como padrão no registro do usuário
+if ($SetAsDefault) {
+    # Aplica assinatura em todas as versões do Outlook detectadas
+    $versions = @("16.0", "15.0", "14.0")
+    $aplicou = $false
+
+    foreach ($v in $versions) {
+        $baseKey = "Registry::HKEY_USERS\$sid\Software\Microsoft\Office\$v\Common"
+        if (Test-Path $baseKey) {
+            $mailKey = "$baseKey\MailSettings"
+
+            if (-not (Test-Path $mailKey)) {
+                New-Item -Path $mailKey -Force | Out-Null
+            }
+
+            New-ItemProperty -Path $mailKey -Name "NewSignature" -Value $sigName -PropertyType String -Force | Out-Null
+            New-ItemProperty -Path $mailKey -Name "ReplySignature" -Value $sigName -PropertyType String -Force | Out-Null
+
+            Write-Host "✅ Assinatura '$sigName' aplicada à versão do Outlook $v"
+            $aplicou = $true
+        }
+    }
+
+    if (-not $aplicou) {
+        Write-Warning "⚠ Nenhuma versão do Outlook encontrada no registro. Assinatura criada, mas não aplicada como padrão."
+    }
+}
+
+
+    # Limpar CSV temporário
+    Remove-Item -Path $CsvPath -Force -ErrorAction SilentlyContinue
+
+    Write-Host "✅ Assinatura '$sigName' criada com sucesso para o usuário $nomeUsuario."
+}
+catch {
+    Write-Error "❌ Erro: $_"
+    exit 1
+}
