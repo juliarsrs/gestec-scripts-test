@@ -1,5 +1,5 @@
 param(
-    [string]$CsvUrl = "https://drive.google.com/file/d/1PIbfEFZN6wVIsUmPpTatFXNs3NghzwKq/view?usp=sharing",
+    [string]$CsvUrl = "https://drive.google.com/file/d/1PIbfEFZN6wVIsUmPpTatFXNs3NghzwKq/view?usp=drive_link",
     [string]$CsvPath = "$env:TEMP\tecnoplanta-data.csv",
     [switch]$SetAsDefault = $true
 )
