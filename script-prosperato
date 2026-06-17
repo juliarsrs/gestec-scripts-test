@@ -1,5 +1,5 @@
 param(
-    [string]$CsvUrl = "https://drive.google.com/uc?export=download&id=1wQhhtKmjAnMkufALcb0Vc245glInmxBR",
+    [string]$CsvUrl = "https://drive.google.com/uc?export=download&id=1YgztBuEQkJPn8PfPHWSbETL4MhxTpbQr",
     [string]$CsvPath = "$env:TEMP\details.csv",
     [switch]$SetAsDefault = $true
 )
