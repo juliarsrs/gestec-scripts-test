@@ -1,0 +1,216 @@
+param(
+    [string]$CsvUrl = "https://drive.google.com/uc?export=download&id=1kexp3LbxxgR6oL_kakktkzn2OiyCI2JJ",
+    [string]$CsvPath = "$env:TEMP\tecnoplanta-data.csv",
+    [switch]$SetAsDefault = $true
+)
+
+# Template HTML da assinatura
+$htmlTemplate = @"
+<table style="border-collapse: collapse; font-family: Aptos, Arial, sans-serif;">
+  <tr>
+    <td rowspan="1" colspan="5" style="text-align: center; padding: 4px;">
+      <img src="{{LINK_LOGO}}" width="125" height="48" alt="Logo" style="display:block;">
+    </td>
+
+    <td colspan="4" style="padding: 0; vertical-align: bottom; height: 1px; line-height: 1;">
+      <table style="border-collapse:collapse; margin:0; padding:0;">
+        <tr>
+          <td style="padding:0; margin:0; line-height:12px;">
+            <b style="font-size:12pt; color:#595959; margin:0; padding:0;">
+              {{NOME}}
+            </b>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0; margin:0; line-height:10px;">
+            <span style="font-size:11pt; color:#00B050; margin:0; padding:0;">
+              {{CARGO}}
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td style="width: 200px; padding:0; margin:0; line-height:10px;">
+            <span style="width: 200px; font-size: 8pt; color:#7F7F7F; margin:0; padding:0;">
+              {{ENDERECO}}
+            </span>
+          </td>
+        </tr>
+      </table>
+    </td>
+
+    <td rowspan="5" style="padding: 4px;">
+      <img src="{{LINK_GIF}}" width="103" height="103" alt="Foto" style="display:block;">
+    </td>
+
+  </tr>
+
+  <tr style="line-height: 8px; height: 8px;">
+    <td colspan="2"></td>
+
+  <td colspan="2" style="padding:0;" valign="top" align="right">
+    <table cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+      <tr>
+        <td style="padding:0; margin-right: 4px;">
+          <a href="https://www.facebook.com/TecnoplantaFlorestal/" style="display:block; padding:0;">
+            <img src="{{LINK_FACEBOOK}}" width="13" height="13" alt="Facebook" style="display:block;">
+          </a>
+        </td>
+        <td style="padding:0;">
+          <a href="https://www.linkedin.com/company/tecnoplanta-florestal-ltda-/" style="display:block; padding:0;">
+            <img src="{{LINK_LINKEDIN}}" width="13" height="13" alt="LinkedIn" style="display:block;">
+          </a>
+        </td>
+      </tr>
+    </table>
+  </td>
+
+    <td></td>
+
+    <td colspan="4" style="padding:0; vertical-align: top;">
+      <table cellspacing="0" cellpadding="0" style="border-collapse:collapse; margin:0; padding:0;">
+        <tr>
+          <td style="padding:0; font-size:8pt; color:#7F7F7F; line-height:8px;">
+            <img src="{{LINK_TELEFONE}}" width="10" height="10" alt="Telefone"
+              style="display:block; margin-right:4px;">
+          </td>
+          <td style="padding:0; font-size:8pt; color:#7F7F7F; line-height:8px;">
+            &nbsp;+{{TELEFONE}}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0; font-size:8pt; color:#7F7F7F; line-height:8px;">
+            <img src="{{LINK_SITE}}" width="10" height="10" alt="Site"
+              style="display:block; margin-right:4px;">
+          </td>
+          <td style="padding:0; font-size:8pt; color:#7F7F7F; line-height:8px;">
+            <a href="https://www.tecnoplanta.com.br/" style="color:#7F7F7F; text-decoration:none;">&nbsp;tecnoplanta.com.br</a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+"@
+
+# Função para detectar versão do Outlook via registro do usuário (HKU:\<SID>)
+function Get-OutlookVersionKey {
+    param([string]$sid)
+
+    $versions = @("16.0", "15.0", "14.0")
+    foreach ($v in $versions) {
+        $key = "Registry::HKEY_USERS\$sid\Software\Microsoft\Office\$v\Common"
+        if (Test-Path $key) { return $v }
+    }
+    return $null
+}
+
+try {
+    # Obter usuário logado
+    $user = (Get-CimInstance Win32_ComputerSystem).UserName
+    if (-not $user) { throw "Nenhum usuário logado encontrado." }
+    $nomeUsuario = $user.Split('\')[-1]
+    Write-Host "Usuário logado: $nomeUsuario"
+
+    # Obter SID do usuário logado de forma confiável
+    try {
+        $ntAccount = New-Object System.Security.Principal.NTAccount($user)
+        $sid = $ntAccount.Translate([System.Security.Principal.SecurityIdentifier]).Value
+        Write-Host "SID do usuário ${nomeUsuario}: $sid"
+    }
+    catch {
+        throw "Não foi possível obter o SID para o usuário $nomeUsuario"
+    }
+
+    # Baixar CSV
+    Write-Host "Baixando CSV de: $CsvUrl"
+    Invoke-WebRequest -Uri $CsvUrl -OutFile $CsvPath -UseBasicParsing
+
+    if (-not (Test-Path $CsvPath)) { throw "CSV não foi baixado corretamente." }
+
+    # Importar CSV
+    Write-Host "Importando CSV..."
+    $rows = Import-Csv -Path $CsvPath -Encoding UTF8
+    if (-not $rows -or $rows.Count -eq 0) { throw "CSV está vazio ou inválido." }
+
+    # Obter ServiceTag atual
+    $serviceTag = (Get-CimInstance Win32_BIOS).SerialNumber.Trim()
+    Write-Host "ServiceTag do computador: '$serviceTag'"
+    
+    # Procurar linha correspondente
+    $userRow = $rows | Where-Object { $_.ServiceTag.Trim() -eq $serviceTag }
+    if (-not $userRow) { throw "ServiceTag '$serviceTag' não encontrado no CSV." }
+
+    # Inspecionar todas as propriedades disponíveis para debug
+    $userRow | Get-Member -MemberType NoteProperty | ForEach-Object { Write-Host $_.Name }
+
+    Write-Host "Dados encontrados para: $($userRow.nome)"
+
+    # Substituir os campos no HTML
+    $html = $htmlTemplate.Replace("{{NOME}}", $userRow.nome).
+                          Replace("{{CARGO}}", $userRow.cargo).
+                          Replace("{{TELEFONE}}", $userRow.telefone).
+						              Replace("{{ENDERECO}}", $userRow.endereco).
+						              Replace("{{LINK_LOGO}}", $userRow.link_logo).
+						              Replace("{{LINK_GIF}}", $userRow.link_gif).
+                          Replace("{{LINK_SITE}}", $userRow.link_site).
+                          Replace("{{LINK_FACEBOOK}}", $userRow.link_facebook).
+						              Replace("{{LINK_LINKEDIN}}", $userRow.link_linkedin).
+						              Replace("{{LINK_TELEFONE}}", $userRow.link_telefone)
+
+    $sigName = $userRow.nome
+
+    # Caminho do diretório de assinaturas do usuário logado
+    $sigRoot = "C:\Users\$nomeUsuario\AppData\Roaming\Microsoft\Signatures"
+    if (-not (Test-Path $sigRoot)) {
+        New-Item -Path $sigRoot -ItemType Directory -Force | Out-Null
+    }
+
+    $htmPath = Join-Path $sigRoot "$sigName.htm"
+    $txtPath = Join-Path $sigRoot "$sigName.txt"
+
+    # Salva assinatura HTML (com BOM)
+    $utf8 = New-Object System.Text.UTF8Encoding($true)
+    [System.IO.File]::WriteAllText($htmPath, $html, $utf8)
+
+    # Criar versão TXT simples
+    $plain = ($html -replace "<[^>]+>", " ") -replace "\s+", " "
+    Set-Content -Path $txtPath -Value $plain -Encoding UTF8
+
+    # Configurar assinatura como padrão no registro do usuário
+if ($SetAsDefault) {
+    # Aplica assinatura em todas as versões do Outlook detectadas
+    $versions = @("16.0", "15.0", "14.0")
+    $aplicou = $false
+
+    foreach ($v in $versions) {
+        $baseKey = "Registry::HKEY_USERS\$sid\Software\Microsoft\Office\$v\Common"
+        if (Test-Path $baseKey) {
+            $mailKey = "$baseKey\MailSettings"
+
+            if (-not (Test-Path $mailKey)) {
+                New-Item -Path $mailKey -Force | Out-Null
+            }
+
+            New-ItemProperty -Path $mailKey -Name "NewSignature" -Value $sigName -PropertyType String -Force | Out-Null
+            New-ItemProperty -Path $mailKey -Name "ReplySignature" -Value $sigName -PropertyType String -Force | Out-Null
+
+            Write-Host "✅ Assinatura '$sigName' aplicada à versão do Outlook $v"
+            $aplicou = $true
+        }
+    }
+
+    if (-not $aplicou) {
+        Write-Warning "⚠ Nenhuma versão do Outlook encontrada no registro. Assinatura criada, mas não aplicada como padrão."
+    }
+}
+
+
+    # Limpar CSV temporário
+    Remove-Item -Path $CsvPath -Force -ErrorAction SilentlyContinue
+
+    Write-Host "✅ Assinatura '$sigName' criada com sucesso para o usuário $nomeUsuario."
+}
+catch {
+    Write-Error "❌ Erro: $_"
+    exit 1
+}
