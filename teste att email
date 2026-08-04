@@ -4,16 +4,32 @@ param(
     [switch]$SetAsDefault = $true
 )
 
-# Template HTML da assinatura
+$ErrorActionPreference = "Stop"
+
+# ============================================================
+# TEMPLATE HTML DA ASSINATURA
+# ============================================================
+
 $htmlTemplate = @"
-<table style="border-collapse: collapse; font-family: Aptos, Arial, sans-serif;">
+<table cellpadding="0" cellspacing="0" border="0"
+       style="border-collapse:collapse; font-family:Aptos, Arial, sans-serif;">
+
   <tr>
-    <td rowspan="1" colspan="5" style="text-align: center; padding: 4px;">
-      <img src="{{LINK_LOGO}}" width="125" height="48" alt="Logo" style="display:block;">
+    <td rowspan="1" colspan="5"
+        style="text-align:center; padding:4px;">
+      <img src="{{LINK_LOGO}}"
+           width="125"
+           height="48"
+           alt="Logo"
+           style="display:block; border:0;">
     </td>
 
-    <td colspan="4" style="padding: 0; vertical-align: bottom; height: 1px; line-height: 1;">
-      <table style="border-collapse:collapse; margin:0; padding:0;">
+    <td colspan="4"
+        style="padding:0; vertical-align:bottom; height:1px; line-height:1;">
+
+      <table cellpadding="0" cellspacing="0" border="0"
+             style="border-collapse:collapse; margin:0; padding:0;">
+
         <tr>
           <td style="padding:0; margin:0; line-height:12px;">
             <b style="font-size:12pt; color:#595959; margin:0; padding:0;">
@@ -21,6 +37,7 @@ $htmlTemplate = @"
             </b>
           </td>
         </tr>
+
         <tr>
           <td style="padding:0; margin:0; line-height:10px;">
             <span style="font-size:11pt; color:#00B050; margin:0; padding:0;">
@@ -28,189 +45,755 @@ $htmlTemplate = @"
             </span>
           </td>
         </tr>
+
         <tr>
-          <td style="width: 200px; padding:0; margin:0; line-height:10px;">
-            <span style="width: 200px; font-size: 8pt; color:#7F7F7F; margin:0; padding:0;">
+          <td style="width:200px; padding:0; margin:0; line-height:10px;">
+            <span style="font-size:8pt; color:#7F7F7F; margin:0; padding:0;">
               {{ENDERECO}}
             </span>
           </td>
         </tr>
+
       </table>
     </td>
 
-    <td rowspan="5" style="padding: 4px;">
-      <img src="{{LINK_GIF}}" width="103" height="103" alt="Foto" style="display:block;">
+    <td rowspan="5" style="padding:4px;">
+      <img src="{{LINK_GIF}}"
+           width="103"
+           height="103"
+           alt="Foto"
+           style="display:block; border:0;">
     </td>
-
   </tr>
 
-  <tr style="line-height: 8px; height: 8px;">
+  <tr style="line-height:8px; height:8px;">
+
     <td colspan="2"></td>
 
-  <td colspan="2" style="padding:0;" valign="top" align="right">
-    <table cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
-      <tr>
-        <td style="padding:0; margin-right: 4px;">
-          <a href="https://www.facebook.com/TecnoplantaFlorestal/" style="display:block; padding:0;">
-            <img src="{{LINK_FACEBOOK}}" width="13" height="13" alt="Facebook" style="display:block;">
-          </a>
-        </td>
-        <td style="padding:0;">
-          <a href="https://www.linkedin.com/company/tecnoplanta-florestal-ltda-/" style="display:block; padding:0;">
-            <img src="{{LINK_LINKEDIN}}" width="13" height="13" alt="LinkedIn" style="display:block;">
-          </a>
-        </td>
-      </tr>
-    </table>
-  </td>
+    <td colspan="2"
+        style="padding:0;"
+        valign="top"
+        align="right">
+
+      <table cellpadding="0" cellspacing="0" border="0"
+             style="border-collapse:collapse;">
+
+        <tr>
+          <td style="padding:0 4px 0 0; margin:0;">
+            <a href="https://www.facebook.com/TecnoplantaFlorestal/"
+               style="display:block; padding:0; text-decoration:none;">
+
+              <img src="{{LINK_FACEBOOK}}"
+                   width="13"
+                   height="13"
+                   alt="Facebook"
+                   style="display:block; border:0;">
+            </a>
+          </td>
+
+          <td style="padding:0; margin:0;">
+            <a href="https://www.linkedin.com/company/tecnoplanta-florestal-ltda-/"
+               style="display:block; padding:0; text-decoration:none;">
+
+              <img src="{{LINK_LINKEDIN}}"
+                   width="13"
+                   height="13"
+                   alt="LinkedIn"
+                   style="display:block; border:0;">
+            </a>
+          </td>
+        </tr>
+
+      </table>
+    </td>
 
     <td></td>
 
-    <td colspan="4" style="padding:0; vertical-align: top;">
-      <table cellspacing="0" cellpadding="0" style="border-collapse:collapse; margin:0; padding:0;">
+    <td colspan="4"
+        style="padding:0; vertical-align:top;">
+
+      <table cellpadding="0" cellspacing="0" border="0"
+             style="border-collapse:collapse; margin:0; padding:0;">
+
         <tr>
           <td style="padding:0; font-size:8pt; color:#7F7F7F; line-height:8px;">
-            <img src="{{LINK_TELEFONE}}" width="10" height="10" alt="Telefone"
-              style="display:block; margin-right:4px;">
+            <img src="{{LINK_TELEFONE}}"
+                 width="10"
+                 height="10"
+                 alt="Telefone"
+                 style="display:block; border:0; margin-right:4px;">
           </td>
+
           <td style="padding:0; font-size:8pt; color:#7F7F7F; line-height:8px;">
             &nbsp;+{{TELEFONE}}
           </td>
         </tr>
+
         <tr>
           <td style="padding:0; font-size:8pt; color:#7F7F7F; line-height:8px;">
-            <img src="{{LINK_SITE}}" width="10" height="10" alt="Site"
-              style="display:block; margin-right:4px;">
+            <img src="{{LINK_SITE}}"
+                 width="10"
+                 height="10"
+                 alt="Site"
+                 style="display:block; border:0; margin-right:4px;">
           </td>
+
           <td style="padding:0; font-size:8pt; color:#7F7F7F; line-height:8px;">
-            <a href="https://www.tecnoplanta.com.br/" style="color:#7F7F7F; text-decoration:none;">&nbsp;tecnoplanta.com.br</a>
+            <a href="https://www.tecnoplanta.com.br/"
+               style="color:#7F7F7F; text-decoration:none;">
+              &nbsp;tecnoplanta.com.br
+            </a>
           </td>
         </tr>
+
       </table>
     </td>
   </tr>
+
 </table>
 "@
 
-# Função para detectar versão do Outlook via registro do usuário (HKU:\<SID>)
-function Get-OutlookVersionKey {
-    param([string]$sid)
+# ============================================================
+# FUNÇÕES
+# ============================================================
 
-    $versions = @("16.0", "15.0", "14.0")
-    foreach ($v in $versions) {
-        $key = "Registry::HKEY_USERS\$sid\Software\Microsoft\Office\$v\Common"
-        if (Test-Path $key) { return $v }
+function Get-LoggedOnUser {
+    $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem
+
+    if ([string]::IsNullOrWhiteSpace($computerSystem.UserName)) {
+        throw "Nenhum usuário logado foi encontrado."
     }
-    return $null
+
+    return $computerSystem.UserName
 }
 
-try {
-    # Obter usuário logado
-    $user = (Get-CimInstance Win32_ComputerSystem).UserName
-    if (-not $user) { throw "Nenhum usuário logado encontrado." }
-    $nomeUsuario = $user.Split('\')[-1]
-    Write-Host "Usuário logado: $nomeUsuario"
+function Get-UserSid {
+    param(
+        [Parameter(Mandatory)]
+        [string]$AccountName
+    )
 
-    # Obter SID do usuário logado de forma confiável
     try {
-        $ntAccount = New-Object System.Security.Principal.NTAccount($user)
-        $sid = $ntAccount.Translate([System.Security.Principal.SecurityIdentifier]).Value
-        Write-Host "SID do usuário ${nomeUsuario}: $sid"
+        $ntAccount = New-Object System.Security.Principal.NTAccount($AccountName)
+
+        return $ntAccount.Translate(
+            [System.Security.Principal.SecurityIdentifier]
+        ).Value
     }
     catch {
-        throw "Não foi possível obter o SID para o usuário $nomeUsuario"
+        throw "Não foi possível obter o SID do usuário '$AccountName'. Detalhes: $($_.Exception.Message)"
+    }
+}
+
+function Get-UserProfilePath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Sid
+    )
+
+    $profileKey = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$Sid"
+
+    if (-not (Test-Path $profileKey)) {
+        throw "O perfil do usuário não foi localizado no registro. SID: $Sid"
     }
 
-    # Baixar CSV
-    Write-Host "Baixando CSV de: $CsvUrl"
-    Invoke-WebRequest -Uri $CsvUrl -OutFile $CsvPath -UseBasicParsing
+    $profileImagePath = (
+        Get-ItemProperty -Path $profileKey -Name "ProfileImagePath"
+    ).ProfileImagePath
 
-    if (-not (Test-Path $CsvPath)) { throw "CSV não foi baixado corretamente." }
+    $profileImagePath = [Environment]::ExpandEnvironmentVariables(
+        $profileImagePath
+    )
 
-    # Importar CSV
+    if (-not (Test-Path $profileImagePath)) {
+        throw "A pasta do perfil não foi encontrada: $profileImagePath"
+    }
+
+    return $profileImagePath
+}
+
+function ConvertTo-SafeFileName {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Name
+    )
+
+    $safeName = $Name.Trim()
+
+    foreach ($invalidCharacter in [System.IO.Path]::GetInvalidFileNameChars()) {
+        $safeName = $safeName.Replace(
+            [string]$invalidCharacter,
+            ""
+        )
+    }
+
+    if ([string]::IsNullOrWhiteSpace($safeName)) {
+        throw "O nome da assinatura ficou vazio após remover caracteres inválidos."
+    }
+
+    return $safeName
+}
+
+function ConvertTo-RtfText {
+    param(
+        [AllowNull()]
+        [string]$Text
+    )
+
+    if ($null -eq $Text) {
+        return ""
+    }
+
+    $builder = New-Object System.Text.StringBuilder
+
+    foreach ($character in $Text.ToCharArray()) {
+        $code = [int][char]$character
+
+        switch ($character) {
+            "\" {
+                [void]$builder.Append("\\")
+            }
+
+            "{" {
+                [void]$builder.Append("\{")
+            }
+
+            "}" {
+                [void]$builder.Append("\}")
+            }
+
+            "`r" {
+                # Ignorar CR. O LF será tratado abaixo.
+            }
+
+            "`n" {
+                [void]$builder.Append("\line ")
+            }
+
+            default {
+                if ($code -gt 127) {
+                    if ($code -gt 32767) {
+                        $code = $code - 65536
+                    }
+
+                    [void]$builder.Append("\u$code?")
+                }
+                else {
+                    [void]$builder.Append($character)
+                }
+            }
+        }
+    }
+
+    return $builder.ToString()
+}
+
+function Get-OfficeVersions {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Sid
+    )
+
+    $possibleVersions = @(
+        "16.0",
+        "15.0",
+        "14.0"
+    )
+
+    $detectedVersions = @()
+
+    foreach ($version in $possibleVersions) {
+        $officeKey = "Registry::HKEY_USERS\$Sid\Software\Microsoft\Office\$version"
+
+        if (Test-Path $officeKey) {
+            $detectedVersions += $version
+        }
+    }
+
+    # Atualmente o Microsoft 365 e o Outlook 2016/2019/2021 usam 16.0.
+    # Caso nenhuma chave tenha sido criada ainda, usamos 16.0.
+    if ($detectedVersions.Count -eq 0) {
+        $detectedVersions += "16.0"
+    }
+
+    return $detectedVersions
+}
+
+function Disable-OutlookRoamingSignatures {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Sid,
+
+        [Parameter(Mandatory)]
+        [string[]]$OfficeVersions
+    )
+
+    foreach ($version in $OfficeVersions) {
+        $setupKey = "Registry::HKEY_USERS\$Sid\Software\Microsoft\Office\$version\Outlook\Setup"
+
+        if (-not (Test-Path $setupKey)) {
+            New-Item -Path $setupKey -Force | Out-Null
+        }
+
+        New-ItemProperty `
+            -Path $setupKey `
+            -Name "DisableRoamingSignatures" `
+            -Value 1 `
+            -PropertyType DWord `
+            -Force | Out-Null
+
+        # Mantido para compatibilidade com builds que ainda utilizam
+        # a configuração temporária.
+        New-ItemProperty `
+            -Path $setupKey `
+            -Name "DisableRoamingSignaturesTemporaryToggle" `
+            -Value 1 `
+            -PropertyType DWord `
+            -Force | Out-Null
+
+        Write-Host "Assinaturas em roaming desabilitadas para o Office $version."
+    }
+}
+
+function Set-OutlookDefaultSignature {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Sid,
+
+        [Parameter(Mandatory)]
+        [string[]]$OfficeVersions,
+
+        [Parameter(Mandatory)]
+        [string]$SignatureName
+    )
+
+    foreach ($version in $OfficeVersions) {
+        $mailSettingsKey = "Registry::HKEY_USERS\$Sid\Software\Microsoft\Office\$version\Common\MailSettings"
+
+        if (-not (Test-Path $mailSettingsKey)) {
+            New-Item -Path $mailSettingsKey -Force | Out-Null
+        }
+
+        New-ItemProperty `
+            -Path $mailSettingsKey `
+            -Name "NewSignature" `
+            -Value $SignatureName `
+            -PropertyType String `
+            -Force | Out-Null
+
+        New-ItemProperty `
+            -Path $mailSettingsKey `
+            -Name "ReplySignature" `
+            -Value $SignatureName `
+            -PropertyType String `
+            -Force | Out-Null
+
+        Write-Host "Assinatura padrão configurada para o Office $version."
+    }
+}
+
+# ============================================================
+# EXECUÇÃO PRINCIPAL
+# ============================================================
+
+try {
+    Write-Host ""
+    Write-Host "=============================================="
+    Write-Host " Instalação de assinatura - Tecnoplanta"
+    Write-Host "=============================================="
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 1. Identificar usuário, SID e perfil
+    # --------------------------------------------------------
+
+    $loggedOnUser = Get-LoggedOnUser
+    $nomeUsuario = $loggedOnUser.Split("\")[-1]
+    $sid = Get-UserSid -AccountName $loggedOnUser
+    $userProfilePath = Get-UserProfilePath -Sid $sid
+
+    Write-Host "Usuário logado: $loggedOnUser"
+    Write-Host "SID: $sid"
+    Write-Host "Perfil: $userProfilePath"
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 2. Fechar o Outlook
+    # --------------------------------------------------------
+
+    $outlookProcesses = Get-Process -Name "OUTLOOK" -ErrorAction SilentlyContinue
+
+    if ($outlookProcesses) {
+        Write-Host "O Outlook está aberto e será fechado para aplicar a assinatura."
+
+        $outlookProcesses | Stop-Process -Force
+
+        Start-Sleep -Seconds 3
+
+        Write-Host "Outlook fechado."
+    }
+    else {
+        Write-Host "O Outlook já está fechado."
+    }
+
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 3. Detectar versões do Office
+    # --------------------------------------------------------
+
+    $officeVersions = @(Get-OfficeVersions -Sid $sid)
+
+    Write-Host "Versões do Office que serão configuradas:"
+    $officeVersions | ForEach-Object {
+        Write-Host " - $_"
+    }
+
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 4. Desabilitar assinaturas em roaming
+    # --------------------------------------------------------
+
+    Disable-OutlookRoamingSignatures `
+        -Sid $sid `
+        -OfficeVersions $officeVersions
+
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 5. Baixar CSV
+    # --------------------------------------------------------
+
+    if (Test-Path $CsvPath) {
+        Remove-Item -Path $CsvPath -Force -ErrorAction SilentlyContinue
+    }
+
+    Write-Host "Baixando CSV:"
+    Write-Host $CsvUrl
+
+    Invoke-WebRequest `
+        -Uri $CsvUrl `
+        -OutFile $CsvPath `
+        -UseBasicParsing
+
+    if (-not (Test-Path $CsvPath)) {
+        throw "O CSV não foi baixado corretamente."
+    }
+
+    if ((Get-Item $CsvPath).Length -eq 0) {
+        throw "O arquivo CSV foi baixado, mas está vazio."
+    }
+
+    Write-Host "CSV baixado em: $CsvPath"
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 6. Importar CSV
+    # --------------------------------------------------------
+
     Write-Host "Importando CSV..."
-    $rows = Import-Csv -Path $CsvPath -Encoding UTF8
-    if (-not $rows -or $rows.Count -eq 0) { throw "CSV está vazio ou inválido." }
 
-    # Obter ServiceTag atual
-    $serviceTag = (Get-CimInstance Win32_BIOS).SerialNumber.Trim()
+    $rows = @(
+        Import-Csv `
+            -Path $CsvPath `
+            -Encoding UTF8
+    )
+
+    if ($rows.Count -eq 0) {
+        throw "O CSV está vazio ou possui uma estrutura inválida."
+    }
+
+    $requiredColumns = @(
+        "ServiceTag",
+        "nome",
+        "cargo",
+        "telefone",
+        "endereco",
+        "link_logo",
+        "link_gif",
+        "link_site",
+        "link_facebook",
+        "link_linkedin",
+        "link_telefone"
+    )
+
+    $availableColumns = @(
+        $rows[0].PSObject.Properties.Name
+    )
+
+    foreach ($column in $requiredColumns) {
+        if ($column -notin $availableColumns) {
+            throw "A coluna obrigatória '$column' não foi encontrada no CSV."
+        }
+    }
+
+    Write-Host "$($rows.Count) registro(s) importado(s)."
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 7. Localizar usuário pelo ServiceTag
+    # --------------------------------------------------------
+
+    $serviceTag = (
+        Get-CimInstance -ClassName Win32_BIOS
+    ).SerialNumber.Trim()
+
+    if ([string]::IsNullOrWhiteSpace($serviceTag)) {
+        throw "Não foi possível obter o ServiceTag do computador."
+    }
+
     Write-Host "ServiceTag do computador: '$serviceTag'"
-    
-    # Procurar linha correspondente
-    $userRow = $rows | Where-Object { $_.ServiceTag.Trim() -eq $serviceTag }
-    if (-not $userRow) { throw "ServiceTag '$serviceTag' não encontrado no CSV." }
 
-    # Inspecionar todas as propriedades disponíveis para debug
-    $userRow | Get-Member -MemberType NoteProperty | ForEach-Object { Write-Host $_.Name }
+    $matchingRows = @(
+        $rows | Where-Object {
+            -not [string]::IsNullOrWhiteSpace($_.ServiceTag) -and
+            $_.ServiceTag.Trim() -eq $serviceTag
+        }
+    )
 
-    Write-Host "Dados encontrados para: $($userRow.nome)"
+    if ($matchingRows.Count -eq 0) {
+        throw "O ServiceTag '$serviceTag' não foi encontrado no CSV."
+    }
 
-    # Substituir os campos no HTML
-    $html = $htmlTemplate.Replace("{{NOME}}", $userRow.nome).
-                          Replace("{{CARGO}}", $userRow.cargo).
-                          Replace("{{TELEFONE}}", $userRow.telefone).
-						              Replace("{{ENDERECO}}", $userRow.endereco).
-						              Replace("{{LINK_LOGO}}", $userRow.link_logo).
-						              Replace("{{LINK_GIF}}", $userRow.link_gif).
-                          Replace("{{LINK_SITE}}", $userRow.link_site).
-                          Replace("{{LINK_FACEBOOK}}", $userRow.link_facebook).
-						              Replace("{{LINK_LINKEDIN}}", $userRow.link_linkedin).
-						              Replace("{{LINK_TELEFONE}}", $userRow.link_telefone)
+    if ($matchingRows.Count -gt 1) {
+        Write-Warning "Foram encontrados vários registros com o ServiceTag '$serviceTag'. O primeiro será utilizado."
+    }
 
-    $sigName = $userRow.nome
+    $userRow = $matchingRows[0]
 
-    # Caminho do diretório de assinaturas do usuário logado
-    $sigRoot = "C:\Users\$nomeUsuario\AppData\Roaming\Microsoft\Signatures"
+    if ([string]::IsNullOrWhiteSpace($userRow.nome)) {
+        throw "O campo 'nome' está vazio para o ServiceTag '$serviceTag'."
+    }
+
+    Write-Host "Registro localizado para: $($userRow.nome)"
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 8. Montar HTML da assinatura
+    # --------------------------------------------------------
+
+    $htmlBody = $htmlTemplate.
+        Replace("{{NOME}}", [string]$userRow.nome).
+        Replace("{{CARGO}}", [string]$userRow.cargo).
+        Replace("{{TELEFONE}}", [string]$userRow.telefone).
+        Replace("{{ENDERECO}}", [string]$userRow.endereco).
+        Replace("{{LINK_LOGO}}", [string]$userRow.link_logo).
+        Replace("{{LINK_GIF}}", [string]$userRow.link_gif).
+        Replace("{{LINK_SITE}}", [string]$userRow.link_site).
+        Replace("{{LINK_FACEBOOK}}", [string]$userRow.link_facebook).
+        Replace("{{LINK_LINKEDIN}}", [string]$userRow.link_linkedin).
+        Replace("{{LINK_TELEFONE}}", [string]$userRow.link_telefone)
+
+    $sigName = ConvertTo-SafeFileName -Name $userRow.nome
+
+    $fullHtml = @"
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="Generator" content="Microsoft Outlook">
+<title>$sigName</title>
+</head>
+<body style="margin:0; padding:0;">
+$htmlBody
+</body>
+</html>
+"@
+
+    # --------------------------------------------------------
+    # 9. Criar diretório de assinaturas
+    # --------------------------------------------------------
+
+    $sigRoot = Join-Path `
+        $userProfilePath `
+        "AppData\Roaming\Microsoft\Signatures"
+
     if (-not (Test-Path $sigRoot)) {
-        New-Item -Path $sigRoot -ItemType Directory -Force | Out-Null
+        New-Item `
+            -Path $sigRoot `
+            -ItemType Directory `
+            -Force | Out-Null
     }
 
     $htmPath = Join-Path $sigRoot "$sigName.htm"
     $txtPath = Join-Path $sigRoot "$sigName.txt"
+    $rtfPath = Join-Path $sigRoot "$sigName.rtf"
 
-    # Salva assinatura HTML (com BOM)
-    $utf8 = New-Object System.Text.UTF8Encoding($true)
-    [System.IO.File]::WriteAllText($htmPath, $html, $utf8)
+    Write-Host "Diretório das assinaturas:"
+    Write-Host $sigRoot
+    Write-Host ""
 
-    # Criar versão TXT simples
-    $plain = ($html -replace "<[^>]+>", " ") -replace "\s+", " "
-    Set-Content -Path $txtPath -Value $plain -Encoding UTF8
+    # --------------------------------------------------------
+    # 10. Criar arquivo HTML
+    # --------------------------------------------------------
 
-    # Configurar assinatura como padrão no registro do usuário
-if ($SetAsDefault) {
-    # Aplica assinatura em todas as versões do Outlook detectadas
-    $versions = @("16.0", "15.0", "14.0")
-    $aplicou = $false
+    $utf8Bom = New-Object System.Text.UTF8Encoding($true)
 
-    foreach ($v in $versions) {
-        $baseKey = "Registry::HKEY_USERS\$sid\Software\Microsoft\Office\$v\Common"
-        if (Test-Path $baseKey) {
-            $mailKey = "$baseKey\MailSettings"
+    [System.IO.File]::WriteAllText(
+        $htmPath,
+        $fullHtml,
+        $utf8Bom
+    )
 
-            if (-not (Test-Path $mailKey)) {
-                New-Item -Path $mailKey -Force | Out-Null
-            }
+    # --------------------------------------------------------
+    # 11. Criar arquivo TXT
+    # --------------------------------------------------------
 
-            New-ItemProperty -Path $mailKey -Name "NewSignature" -Value $sigName -PropertyType String -Force | Out-Null
-            New-ItemProperty -Path $mailKey -Name "ReplySignature" -Value $sigName -PropertyType String -Force | Out-Null
+    $plainText = @"
+$($userRow.nome)
+$($userRow.cargo)
+$($userRow.endereco)
++$($userRow.telefone)
+tecnoplanta.com.br
+"@
 
-            Write-Host "✅ Assinatura '$sigName' aplicada à versão do Outlook $v"
-            $aplicou = $true
+    [System.IO.File]::WriteAllText(
+        $txtPath,
+        $plainText.Trim(),
+        $utf8Bom
+    )
+
+    # --------------------------------------------------------
+    # 12. Criar arquivo RTF
+    # --------------------------------------------------------
+
+    $rtfNome = ConvertTo-RtfText -Text $userRow.nome
+    $rtfCargo = ConvertTo-RtfText -Text $userRow.cargo
+    $rtfEndereco = ConvertTo-RtfText -Text $userRow.endereco
+    $rtfTelefone = ConvertTo-RtfText -Text $userRow.telefone
+
+    $rtfContent = @"
+{\rtf1\ansi\ansicpg1252\deff0
+{\fonttbl{\f0\fnil Aptos;}{\f1\fnil Arial;}}
+{\colortbl;
+\red89\green89\blue89;
+\red0\green176\blue80;
+\red127\green127\blue127;
+}
+\viewkind4\uc1
+\pard\f0\cf1\b\fs24 $rtfNome\b0\par
+\pard\f0\cf2\fs22 $rtfCargo\par
+\pard\f0\cf3\fs16 $rtfEndereco\par
+\pard\f0\cf3\fs16 +$rtfTelefone\par
+\pard\f0\cf3\fs16 tecnoplanta.com.br\par
+}
+"@
+
+    $asciiEncoding = [System.Text.Encoding]::ASCII
+
+    [System.IO.File]::WriteAllText(
+        $rtfPath,
+        $rtfContent,
+        $asciiEncoding
+    )
+
+    # --------------------------------------------------------
+    # 13. Configurar assinatura como padrão
+    # --------------------------------------------------------
+
+    if ($SetAsDefault) {
+        Set-OutlookDefaultSignature `
+            -Sid $sid `
+            -OfficeVersions $officeVersions `
+            -SignatureName $sigName
+    }
+    else {
+        Write-Host "A configuração como assinatura padrão foi ignorada."
+    }
+
+    Write-Host ""
+
+    # --------------------------------------------------------
+    # 14. Validar arquivos
+    # --------------------------------------------------------
+
+    $expectedFiles = @(
+        $htmPath,
+        $txtPath,
+        $rtfPath
+    )
+
+    foreach ($file in $expectedFiles) {
+        if (-not (Test-Path $file)) {
+            throw "O arquivo não foi criado corretamente: $file"
+        }
+
+        if ((Get-Item $file).Length -eq 0) {
+            throw "O arquivo foi criado, mas está vazio: $file"
         }
     }
 
-    if (-not $aplicou) {
-        Write-Warning "⚠ Nenhuma versão do Outlook encontrada no registro. Assinatura criada, mas não aplicada como padrão."
+    # --------------------------------------------------------
+    # 15. Validar registro
+    # --------------------------------------------------------
+
+    foreach ($version in $officeVersions) {
+        $setupKey = "Registry::HKEY_USERS\$sid\Software\Microsoft\Office\$version\Outlook\Setup"
+        $mailSettingsKey = "Registry::HKEY_USERS\$sid\Software\Microsoft\Office\$version\Common\MailSettings"
+
+        $setupValues = Get-ItemProperty -Path $setupKey
+
+        if ($setupValues.DisableRoamingSignatures -ne 1) {
+            throw "Não foi possível configurar DisableRoamingSignatures no Office $version."
+        }
+
+        if ($SetAsDefault) {
+            $mailValues = Get-ItemProperty -Path $mailSettingsKey
+
+            if ($mailValues.NewSignature -ne $sigName) {
+                throw "A assinatura padrão para novas mensagens não foi configurada no Office $version."
+            }
+
+            if ($mailValues.ReplySignature -ne $sigName) {
+                throw "A assinatura padrão para respostas não foi configurada no Office $version."
+            }
+        }
     }
-}
 
+    # --------------------------------------------------------
+    # 16. Remover CSV temporário
+    # --------------------------------------------------------
 
-    # Limpar CSV temporário
-    Remove-Item -Path $CsvPath -Force -ErrorAction SilentlyContinue
+    Remove-Item `
+        -Path $CsvPath `
+        -Force `
+        -ErrorAction SilentlyContinue
 
-    Write-Host "✅ Assinatura '$sigName' criada com sucesso para o usuário $nomeUsuario."
+    # --------------------------------------------------------
+    # Resultado
+    # --------------------------------------------------------
+
+    Write-Host ""
+    Write-Host "=============================================="
+    Write-Host " ASSINATURA CRIADA COM SUCESSO"
+    Write-Host "=============================================="
+    Write-Host ""
+    Write-Host "Assinatura: $sigName"
+    Write-Host ""
+    Write-Host "Arquivos criados:"
+    Write-Host " - $htmPath"
+    Write-Host " - $txtPath"
+    Write-Host " - $rtfPath"
+    Write-Host ""
+    Write-Host "Abra novamente o Outlook para carregar a assinatura."
+    Write-Host ""
 }
 catch {
-    Write-Error "❌ Erro: $_"
+    Write-Host ""
+    Write-Host "=============================================="
+    Write-Host " ERRO AO CRIAR A ASSINATURA"
+    Write-Host "=============================================="
+    Write-Host ""
+
+    Write-Error $_.Exception.Message
+
+    if (Test-Path $CsvPath) {
+        Remove-Item `
+            -Path $CsvPath `
+            -Force `
+            -ErrorAction SilentlyContinue
+    }
+
     exit 1
 }
